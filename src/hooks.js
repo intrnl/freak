@@ -15,7 +15,7 @@ export function useContext (context) {
 
 		context._listeners.add(callback);
 		return () => context._listeners.delete(callback);
-	});
+	}, []);
 
 	return id in ctx ? ctx[id] : context.value;
 }
