@@ -533,10 +533,11 @@ function flushRenderInstance () {
 }
 
 export function renderInstance (instance) {
-	let next = instance.vnode;
-	let prev = { ...next };
+	let prev = instance.vnode;
+	let next = jsxs(prev.type, prev.props, prev.key);
+
 	let parent = instance.dom;
-	let prevDOM = next._dom;
+	let prevDOM = prev._dom;
 
 	if (parent) {
 		if (prevDOM == null) {
