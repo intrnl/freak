@@ -189,6 +189,9 @@ function diffChildren (dom, result, nextParent, prevParent, context, isSVG, exce
 		else if (nextChild._depth > 0) {
 			nextChild = nextArray[idx] = jsxs(nextChild.type, nextChild.props, nextChild.key);
 		}
+		else {
+			nextArray[idx] = nextChild;
+		}
 
 		if (nextChild == null) {
 			continue;
