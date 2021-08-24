@@ -27,30 +27,18 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 			instance.vnode = next;
 			instance.ctx = context;
 
+			// Check if component is our context provider, then we clone the current
+			// context so it doesn't affect ancestors.
+			if (nextType == Provider) {
+				context = { ...context };
+			}
+
 			currInstance = instance;
 			currIndex = 0;
 
-			let result = nextType(nextProps);
+			let result = nextType(nextProps, context);
 
 			currInstance = null;
-
-			// Check if component is our context provider, in which case we'll
-			// set the appropriate context, and call any registered listeners.
-			if (nextType == Provider && nextProps.context) {
-				let ctx = nextProps.context;
-				context = { ...context };
-
-				let prevValue = context[ctx.id];
-				let nextValue = nextProps.value;
-
-				if (nextValue !== prevValue) {
-					for (let listener of ctx._listeners) {
-						listener();
-					}
-				}
-
-				context[ctx.id] = nextValue;
-			}
 
 			if (result?.type == Fragment && result.key == null) {
 				result = result.props.children;

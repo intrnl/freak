@@ -8,6 +8,18 @@ export function createContext (defaultValue) {
 	};
 }
 
-export function Provider (props) {
-	return props.children;
+export function Provider (props, ctx) {
+	let { children, context, value } = props;
+
+	let state = ctx[context.id] ||= { value, listeners: new Set() };
+
+	if (value !== state.value) {
+		state.value = value;
+
+		for (let listener of state.listeners) {
+			listener(value);
+		}
+	}
+
+	return children;
 }

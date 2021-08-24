@@ -6,18 +6,21 @@ export function useErrorBoundary (callback) {
 }
 
 export function useContext (context) {
-	let id = context.id;
 	let ctx = currInstance.ctx;
 	let instance = currInstance;
 
+	let state = ctx[context.id];
+
 	useLayoutEffect(() => {
-		let callback = () => enqueueRenderInstance(instance);
+		if (state) {
+			let callback = () => enqueueRenderInstance(instance);
 
-		context._listeners.add(callback);
-		return () => context._listeners.delete(callback);
-	}, []);
+			state.listeners.add(callback);
+			return () => state.listeners.remove();
+		}
+	}, [state]);
 
-	return id in ctx ? ctx[id] : context.value;
+	return (state || context).value;
 }
 
 export function useReducer (reducer, initialState, init) {
