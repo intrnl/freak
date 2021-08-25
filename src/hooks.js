@@ -2,17 +2,7 @@ import { currInstance, getIndex, enqueueRenderInstance } from './diff.js';
 
 
 export function useErrorBoundary (callback) {
-	let [error, setError] = useState();
-	setError.callback = callback;
-
-	if (!currInstance.err) {
-		currInstance.err = (error) => {
-			setError.callback?.(error);
-			setError(error);
-		};
-	}
-
-	return [error, () => setError(undefined)];
+	currInstance.err = callback;
 }
 
 export function useContext (context) {
