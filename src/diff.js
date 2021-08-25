@@ -468,7 +468,10 @@ function handleError (vnode, error) {
 	while (vnode = vnode._parent) {
 		try {
 			let instance = vnode._instance;
-			if (!instance || !instance.err) continue;
+
+			if (!instance || !instance.err) {
+				continue;
+			}
 
 			if (instance.err(error)) {
 				return;
