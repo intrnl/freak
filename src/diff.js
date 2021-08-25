@@ -57,7 +57,8 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 		else {
 			next._dom = diffElement(prev._dom, next, prev, context, isSVG, excessDOM);
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		handleError(next, error);
 	}
 }
@@ -312,7 +313,8 @@ function setProperty (dom, name, value, prevValue, isSVG) {
 	jump: if (name == 'style') {
 		if (typeof value == 'string') {
 			dom.style.cssText = value;
-		} else {
+		}
+		else {
 			if (typeof prevValue == 'string') {
 				dom.style.cssText = prevValue = '';
 			}
@@ -361,7 +363,8 @@ function setProperty (dom, name, value, prevValue, isSVG) {
 				dom[name] = value == null ? '' : value;
 				// labelled break is 1b smaller here than a return statement (sorry)
 				break jump;
-			} catch {}
+			}
+			catch {}
 		}
 
 		if (typeof value != 'function') {
@@ -454,10 +457,12 @@ function applyRef (ref, value, vnode) {
 	try {
 		if (typeof ref == 'function') {
 			ref(value);
-		} else {
+		}
+		else {
 			ref.current = value;
 		}
-	} catch (err) {
+	}
+	catch (err) {
 		handleError(vnode, err);
 	}
 }
@@ -476,7 +481,8 @@ function handleError (vnode, error) {
 			if (instance.err(error)) {
 				return;
 			}
-		} catch (err) {
+		}
+		catch (err) {
 			error = err;
 		}
 	}
@@ -567,7 +573,8 @@ function flushEffects (instance) {
 			invokeCleanup(effect);
 			invokeHook(effect);
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		handleError(instance.vnode, error);
 	}
 }
@@ -577,7 +584,8 @@ function clearEffects (instance) {
 		for (let effect of instance.hooks) {
 			invokeCleanup(effect);
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		handleError(instance.vnode, error);
 	}
 }
