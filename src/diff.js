@@ -1,4 +1,3 @@
-import { Provider } from './context.js';
 import { Fragment } from './fragment.js';
 import { isVNode, jsxs } from './element.js';
 
@@ -29,7 +28,7 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 
 			// Check if component is our context provider, then we clone the current
 			// context so it doesn't affect ancestors.
-			if (nextType == Provider) {
+			if (nextType.ctx) {
 				context = { ...context };
 			}
 

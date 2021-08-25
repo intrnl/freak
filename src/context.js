@@ -22,3 +22,5 @@ export function Provider (props, ctx) {
 
 	return children;
 }
+
+Provider.ctx = true;
