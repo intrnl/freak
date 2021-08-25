@@ -470,8 +470,9 @@ function handleError (vnode, error) {
 			let instance = vnode._instance;
 			if (!instance || !instance.err) continue;
 
-			instance.err(error);
-			return;
+			if (instance.err(error)) {
+				return;
+			}
 		} catch (err) {
 			error = err;
 		}
