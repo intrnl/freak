@@ -1,21 +1,18 @@
+import { currInstance, enqueueRenderInstance } from './diff.js';
 import { createElement } from './element.js';
-import { useState, useErrorBoundary } from './hooks.js';
+import { useErrorBoundary } from './hooks.js';
 
 export function Suspense (props) {
-	let { fallback, children } = props;
-	let [pending, setPending] = useState(false);
+	let instance = currInstance;
 
 	useErrorBoundary((err) => {
-		if (err?.then) {
-			let callback = () => setPending(false);
-
-			err.then(callback, callback);
-			setPending(true);
+		if (err?.finally) {
+			err.finally(() => enqueueRenderInstance(instance));
 			return true;
 		}
 	});
 
-	return pending ? fallback : children;
+	return props.children;
 }
 
 export function lazy (loader) {
