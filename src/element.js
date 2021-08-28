@@ -41,9 +41,8 @@ export function jsxs (type, props, key = null) {
 
 		_child: null,
 
-		_parentDom: undefined,
 		_dom: undefined,
-		_next: undefined,
+		_nextDOM: undefined,
 
 		type: type,
 		props: props,

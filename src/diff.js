@@ -221,14 +221,14 @@ function diffChildren (dom, result, nextParent, prevParent, context, isSVG, exce
 			}
 
 			if (typeof nextChild.type == 'function' && nextChild._child == prevChild._child) {
-				nextChild._next = prevDOM = reorderChildren(nextChild, dom, prevDOM);
+				nextChild._nextDOM = prevDOM = reorderChildren(nextChild, dom, prevDOM);
 			}
 			else {
 				prevDOM = placeChild(dom, nextChild, prevChild, prevArray, nextDOM, prevDOM);
 			}
 
 			if (typeof nextParent.type === 'function') {
-				nextParent._next = prevDOM;
+				nextParent._nextDOM = prevDOM;
 			}
 		}
 		else if (prevDOM && prevChild._dom == prevDOM && prevDOM.parentNode != dom) {
@@ -242,8 +242,8 @@ function diffChildren (dom, result, nextParent, prevParent, context, isSVG, exce
 		let prev = prevArray[idx];
 
 		if (prev != null) {
-			if (typeof nextParent.type == 'function' && prev._dom != null && prev._dom == nextParent._next) {
-				nextParent._next = getDOMSibling(prevParent, idx + 1);
+			if (typeof nextParent.type == 'function' && prev._dom != null && prev._dom == nextParent._nextDOM) {
+				nextParent._nextDOM = getDOMSibling(prevParent, idx + 1);
 			}
 
 			unmount(prev, prev);
@@ -277,9 +277,9 @@ function reorderChildren (vnode, next, prev) {
 function placeChild (dom, next, prev, prevChildren, nextDOM, prevDOM) {
 	let place;
 
-	if (next._next !== undefined) {
-		place = next._next;
-		next._next = undefined;
+	if (next._nextDOM !== undefined) {
+		place = next._nextDOM;
+		next._nextDOM = undefined;
 	}
 	else if (prev == null || nextDOM != prevDOM || nextDOM.parentNode == null) {
 		outer: if (prevDOM == null || prevDOM.parentNode != dom) {
@@ -416,7 +416,7 @@ function unmount (vnode, parent, skip) {
 	}
 
 	vnode._dom = null;
-	vnode._next = null;
+	vnode._nextDOM = null;
 }
 
 function getDOMSibling (vnode, idx) {
