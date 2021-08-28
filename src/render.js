@@ -4,7 +4,7 @@ import { Fragment } from './fragment.js';
 
 
 export function render (next, dom, replace) {
-	let prev = (replace || dom)._vdom || {};
+	let prev = (replace || dom)._vdom;
 	next = (replace || dom)._vdom = jsxs(Fragment, { children: [next] });
 
 	let context = {};
@@ -17,5 +17,5 @@ export function render (next, dom, replace) {
 				? Array.from(dom.childNodes)
 				: null;
 
-	diff(dom, next, prev, context, isSVG, excessDOM);
+	diff(dom, next, prev || {}, context, isSVG, excessDOM);
 }
