@@ -1,0 +1,19 @@
+lockfileVersion: 5.3
+
+specifiers:
+  '@vue/reactivity': ^3.2.6
+
+dependencies:
+  '@vue/reactivity': 3.2.6
+
+packages:
+
+  /@vue/reactivity/3.2.6:
+    resolution: {integrity: sha512-8vIDD2wpCnYisNNZjmcIj+Rixn0uhZNY3G1vzlgdVdLygeRSuFjkmnZk6WwvGzUWpKfnG0e/NUySM3mVi59hAA==}
+    dependencies:
+      '@vue/shared': 3.2.6
+    dev: false
+
+  /@vue/shared/3.2.6:
+    resolution: {integrity: sha512-uwX0Qs2e6kdF+WmxwuxJxOnKs/wEkMArtYpHSm7W+VY/23Tl8syMRyjnzEeXrNCAP0/8HZxEGkHJsjPEDNRuHw==}
+    dev: false

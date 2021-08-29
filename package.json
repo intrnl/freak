@@ -1,0 +1,5 @@
+{
+	"dependencies": {
+		"@vue/reactivity": "^3.2.6"
+	}
+}
