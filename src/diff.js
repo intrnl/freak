@@ -406,7 +406,7 @@ function unmount (vnode, parent, skip) {
 	if (vnode._child) {
 		for (let child of vnode._child) {
 			if (child) {
-				unmount(vnode, parent, typeof vnode.type != 'function');
+				unmount(child, parent, typeof vnode.type != 'function');
 			}
 		}
 	}
