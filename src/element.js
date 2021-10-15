@@ -1,4 +1,4 @@
-export let isVNode = Symbol('freak.vnode');
+export let isVNode = Symbol.for('freak.vnode');
 export let uid = 0;
 
 export function cloneElement (element, props, ...children) {
