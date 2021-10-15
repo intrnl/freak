@@ -1,26 +1,31 @@
+import { getHookState } from './hooks.js'
+import { getIndex } from './diff.js';
+
 let contextId = 0;
 
 export function createContext (defaultValue) {
 	return {
-		id: 'ctx' + contextId++,
-		value: defaultValue,
+		_id: 'c' + contextId++,
+		_value: defaultValue,
 	};
 }
 
 export function Provider (props, ctx) {
 	let { children, context, value } = props;
 
-	let state = ctx[context.id] ||= { value, listeners: new Set() };
+	let state = getHookState(getIndex());
+	let listeners = state._listeners ||= new Set();
 
-	if (value !== state.value) {
-		state.value = value;
+	if (state._value !== value) {
+		state._value = value;
 
-		for (let listener of state.listeners) {
-			listener(value);
+		for (let listener of listeners) {
+			listener();
 		}
 	}
 
+	ctx[context._id] = state;
 	return children;
 }
 
-Provider.ctx = true;
+Provider._isProvider = true;

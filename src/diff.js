@@ -1,5 +1,5 @@
 import { Fragment } from './fragment.js';
-import { isVNode, jsxs } from './element.js';
+import { isVNode, vnode } from './element.js';
 
 
 export let currInstance = null
@@ -22,14 +22,14 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 			let instance = prev._instance || createInstance();
 			next._instance = instance;
 
-			instance.dom = dom;
-			instance.vnode = next;
-			instance.ctx = context;
+			instance._dom = dom;
+			instance._vnode = next;
+			instance._context = context;
 
 			// Check if component is our context provider, then we clone the current
 			// context so it doesn't affect ancestors.
-			if (nextType.ctx) {
-				context = { ...context };
+			if (nextType._isProvider) {
+				context = Object.create(context);
 			}
 
 			currInstance = instance;
@@ -48,8 +48,9 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 
 			diffChildren(dom, result, next, prev, context, isSVG, excessDOM, prevDOM);
 			flushLayoutEffects(instance, next);
+			requestAnimationFrame(() => flushEffects(instance));
 		}
-		else if (!excessDOM && next === prev) {
+		else if (!excessDOM && next._id === prev._id) {
 			next._child = prev._child;
 			next._dom = prev._dom;
 		}
@@ -169,13 +170,13 @@ function diffChildren (dom, result, nextParent, prevParent, context, isSVG, exce
 			nextChild = nextArray[idx] = null;
 		}
 		else if (type == 'string' || type == 'number' || type == 'bigint') {
-			nextChild = nextArray[idx] = jsxs(null, nextChild);
+			nextChild = nextArray[idx] = vnode(null, nextChild);
 		}
 		else if (Array.isArray(nextChild)) {
-			nextChild = nextArray[idx] = jsxs(Fragment, { children: nextChild });
+			nextChild = nextArray[idx] = vnode(Fragment, { children: nextChild });
 		}
 		else if (nextChild._depth > 0) {
-			nextChild = nextArray[idx] = jsxs(nextChild.type, nextChild.props, nextChild.key);
+			nextChild = nextArray[idx] = vnode(nextChild.type, nextChild.props, nextChild.key, nextChild._id);
 		}
 		else {
 			nextArray[idx] = nextChild;
@@ -335,29 +336,33 @@ function setProperty (dom, name, value, prevValue, isSVG) {
 			}
 		}
 	}
-	else if (name[0] == 'o' && name[1] == 'n') {
-		if (name.toLowerCase() in dom) {
-			name = name.toLowerCase().slice(2);
-		}
-		else {
-			name = name.slice(2);
+	else if (name.startsWith('on')) {
+		let isCapture = false;
+
+		if (name.endsWith('Capture')) {
+			isCapture = true;
+			name = name.slice(0, -7);
 		}
 
-		(dom._listeners ||= {})[name] = value;
+		if (name.toLowerCase() in dom) {
+			name = name.toLowerCase();
+		}
+
+		name = name.slice(2);
 
 		if (value) {
-			dom.removeEventListener(name, prevValue);
-			dom.addEventListener(name, value);
+			dom.removeEventListener(name, prevValue, isCapture);
+			dom.addEventListener(name, value, isCapture);
 		}
 		else {
-			dom.removeEventListener(name, prevValue);
+			dom.removeEventListener(name, prevValue, isCapture);
 		}
 	}
 	else {
 		if (isSVG && name === 'className') {
 			name = 'class';
 		}
-		else if (name !== 'href' &&name !== 'list' &&name !== 'form' &&name !== 'tabIndex' &&name !== 'download' && name in dom) {
+		else if (name !== 'href' && name !== 'list' && name !== 'form' && name !== 'tabIndex' && name !== 'download' && name in dom) {
 			try {
 				dom[name] = value == null ? '' : value;
 				// labelled break is 1b smaller here than a return statement (sorry)
@@ -367,7 +372,7 @@ function setProperty (dom, name, value, prevValue, isSVG) {
 		}
 
 		if (typeof value != 'function') {
-			if (value != null && (value !== false || (name[0] == 'a' && name[1] == 'r' && name[2] == 'i' && name[3] == 'a'))) {
+			if (value != null && (value !== false || name.startsWith('aria-'))) {
 				dom.setAttribute(name, value);
 			}
 			else {
@@ -393,18 +398,22 @@ function setStyle (style, key, value) {
 }
 
 function unmount (vnode, parent, skip) {
-	if (vnode.ref) {
-		if (!vnode.ref.current || vnode.ref.current !== vnode._dom) {
-			applyRef(vnode.ref, null, parent);
+	let ref = vnode.ref;
+	let instance = vnode._instance;
+	let children = vnode._children;
+
+	if (ref) {
+		if (!ref.current || ref.current !== vnode._dom) {
+			applyRef(ref, null, parent);
 		}
 	}
 
-	if (vnode._instance) {
-		clearEffects(vnode._instance);
+	if (instance) {
+		clearEffects(instance);
 	}
 
-	if (vnode._child) {
-		for (let child of vnode._child) {
+	if (children) {
+		for (let child of children) {
 			if (child) {
 				unmount(child, parent, typeof vnode.type != 'function');
 			}
@@ -473,11 +482,11 @@ function handleError (vnode, error) {
 		try {
 			let instance = vnode._instance;
 
-			if (!instance || !instance.err) {
+			if (!instance || !instance._handleError) {
 				continue;
 			}
 
-			if (instance.err(error)) {
+			if (instance._handleError(error)) {
 				return;
 			}
 		}
@@ -493,15 +502,15 @@ function handleError (vnode, error) {
 /// Components
 function createInstance () {
 	return {
-		ctx: null,
-		vnode: null,
-		dom: null,
+		_context: null,
+		_vnode: null,
+		_dom: null,
 
-		hooks: [],
-		pre: [],
-		post: [],
+		_hooks: [],
+		_pre: [],
+		_post: [],
 
-		err: null,
+		_handleError: null,
 	};
 }
 
@@ -517,10 +526,9 @@ export function enqueueRenderInstance (instance) {
 
 function flushRenderInstance () {
 	let queue;
-	let length;
 
-	while ((length = renderQueue.length)) {
-		queue = renderQueue.sort((a, b) => a.vnode._depth - b.vnode._depth);
+	while (renderQueue.length) {
+		queue = renderQueue.sort((a, b) => a._vnode._depth - b._vnode._depth);
 		renderQueue = [];
 
 		for (let instance of queue) {
@@ -530,10 +538,10 @@ function flushRenderInstance () {
 }
 
 export function renderInstance (instance) {
-	let prev = instance.vnode;
-	let next = jsxs(prev.type, prev.props, prev.key);
+	let prev = instance._vnode;
+	let next = vnode(prev.type, prev.props, prev.key);
 
-	let parent = instance.dom;
+	let parent = instance._dom;
 	let prevDOM = prev._dom;
 
 	if (parent) {
@@ -541,7 +549,7 @@ export function renderInstance (instance) {
 			prevDOM = getDOMSibling(next);
 		}
 
-		diff(parent, next, prev, instance.ctx, !!parent.ownerSVGElement, [prevDOM], prevDOM);
+		diff(parent, next, prev, instance._context, !!parent.ownerSVGElement, [prevDOM], prevDOM);
 
 		if (next._dom != prevDOM) {
 			updateParentDOMPointers(next);
@@ -552,19 +560,17 @@ export function renderInstance (instance) {
 
 /// Effects
 function flushLayoutEffects (instance) {
-	let pre = instance.pre;
+	let pre = instance._pre;
 	let queue = pre.splice(0, pre.length);
 
 	for (let effect of queue) {
 		invokeCleanup(effect);
 		invokeHook(effect);
 	}
-
-	requestAnimationFrame(() => flushEffects(instance));
 }
 
 function flushEffects (instance) {
-	let post = instance.post;
+	let post = instance._post;
 	let queue = post.splice(0, post.length);
 
 	try {
@@ -574,26 +580,26 @@ function flushEffects (instance) {
 		}
 	}
 	catch (error) {
-		handleError(instance.vnode, error);
+		handleError(instance._vnode, error);
 	}
 }
 
 function clearEffects (instance) {
 	try {
-		for (let effect of instance.hooks) {
+		for (let effect of instance._hooks) {
 			invokeCleanup(effect);
 		}
 	}
 	catch (error) {
-		handleError(instance.vnode, error);
+		handleError(instance._vnode, error);
 	}
 }
 
 function invokeCleanup (hook) {
 	let prevInstance = currInstance;
 
-	if (typeof hook.cleanup === 'function')  {
-		hook.cleanup();
+	if (typeof hook._cleanup === 'function')  {
+		hook._cleanup();
 	}
 
 	currInstance = prevInstance;
@@ -602,7 +608,7 @@ function invokeCleanup (hook) {
 function invokeHook (hook) {
 	let prevInstance = currInstance;
 
-	hook.cleanup = hook.value();
+	hook._cleanup = hook._value();
 
 	currInstance = prevInstance;
 }

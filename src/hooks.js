@@ -2,49 +2,49 @@ import { currInstance, getIndex, enqueueRenderInstance } from './diff.js';
 
 
 export function useErrorBoundary (callback) {
-	currInstance.err = callback;
+	currInstance._handleError = callback;
 }
 
 export function useContext (context) {
-	let ctx = currInstance.ctx;
+	let ctx = currInstance._context;
 	let instance = currInstance;
 
-	let state = ctx[context.id];
+	let state = ctx[context._id];
 
 	useLayoutEffect(() => {
 		if (state) {
 			let callback = () => enqueueRenderInstance(instance);
 
-			state.listeners.add(callback);
-			return () => state.listeners.remove();
+			state._listeners.add(callback);
+			return () => state._listeners.remove();
 		}
 	}, [state]);
 
-	return (state || context).value;
+	return (state || context)._value;
 }
 
 export function useReducer (reducer, initialState, init) {
 	let state = getHookState(getIndex());
 
-	if (!state.instance) {
+	if (!state._instance) {
 		initialState = init ? init(initialState) : invokeOrReturn(undefined, initialState);
 
 		let dispatch = (action) => {
-			let prevState = state.value[0];
-			let nextState = state.reducer(prevState, action);
+			let prevState = state._value[0];
+			let nextState = state._reducer(prevState, action);
 
 			if (prevState !== nextState) {
-				state.value = [nextState, dispatch];
-				enqueueRenderInstance(state.instance);
+				state._value = [nextState, dispatch];
+				enqueueRenderInstance(state._instance);
 			}
 		};
 
-		state.value = [initialState, dispatch];
+		state._value = [initialState, dispatch];
 	}
 
-	state.reducer = reducer;
-	state.instance = currInstance;
-	return state.value;
+	state._reducer = reducer;
+	state._instance = currInstance;
+	return state._value;
 }
 
 export function useState (initialState) {
@@ -54,34 +54,34 @@ export function useState (initialState) {
 export function useEffect (callback, args) {
 	let state = getHookState(getIndex());
 
-	if (argsChanged(state.args, args)) {
-		state.value = callback;
-		state.args = args;
+	if (argsChanged(state._args, args)) {
+		state._value = callback;
+		state._args = args;
 
-		currInstance.post.push(state);
+		currInstance._post.push(state);
 	}
 }
 
 export function useLayoutEffect (callback, args) {
 	let state = getHookState(getIndex());
 
-	if (argsChanged(state.args, args)) {
-		state.value = callback;
-		state.args = args;
+	if (argsChanged(state._args, args)) {
+		state._value = callback;
+		state._args = args;
 
-		currInstance.pre.push(state);
+		currInstance._pre.push(state);
 	}
 }
 
 export function useMemo (factory, args) {
 	let state = getHookState(getIndex());
 
-	if (argsChanged(state.args, args)) {
-		state.value = factory();
-		state.args = args;
+	if (argsChanged(state._args, args)) {
+		state._value = factory();
+		state._args = args;
 	}
 
-	return state.value;
+	return state._value;
 }
 
 export function useCallback (callback, args) {
@@ -93,8 +93,8 @@ export function useRef (initialValue) {
 }
 
 
-function getHookState (index) {
-	let hooks = currInstance.hooks;
+export function getHookState (index) {
+	let hooks = currInstance._hooks;
 
 	if (index >= hooks.length) {
 		hooks.push({});

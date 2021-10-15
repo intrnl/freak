@@ -24,6 +24,8 @@ function Timestamp () {
 		return () => clearInterval(interval);
 	}, []);
 
+	console.log(time)
+
 	return (
 		<div>
 			{time}
