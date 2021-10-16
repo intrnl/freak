@@ -5,8 +5,15 @@ import { isVNode, vnode } from './element.js';
 export let currInstance = null
 export let currIndex = 0;
 
-export function getIndex () {
-	return currIndex++;
+export function getHookState () {
+	let hooks = currInstance._hooks;
+	let index = currIndex++;
+
+	if (index >= hooks.length) {
+		hooks.push({});
+	}
+
+	return hooks[index];
 }
 
 export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
