@@ -1,5 +1,4 @@
-import { getHookState } from './hooks.js'
-import { getIndex } from './diff.js';
+import { getHookState } from './diff.js'
 
 let contextId = 0;
 
@@ -13,7 +12,7 @@ export function createContext (defaultValue) {
 export function Provider (props, ctx) {
 	let { children, context, value } = props;
 
-	let state = getHookState(getIndex());
+	let state = getHookState();
 	let listeners = state._listeners ||= new Set();
 
 	if (state._value !== value) {
