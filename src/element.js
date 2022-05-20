@@ -1,4 +1,4 @@
-import { VNode } from './utils';
+import { VNode } from './utils.js';
 
 
 export let uid = 0;
