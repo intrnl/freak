@@ -1,5 +1,6 @@
 import { Fragment } from './fragment.js';
-import { isVNode, vnode } from './element.js';
+import { vnode } from './element.js';
+import { CProvider, VNode } from './utils.js';
 
 
 export let currInstance = null
@@ -17,7 +18,7 @@ export function getHookState () {
 }
 
 export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
-	if (next._type !== isVNode) {
+	if (next._type !== VNode) {
 		return null;
 	}
 
@@ -35,7 +36,7 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 
 			// Check if component is our context provider, then we clone the current
 			// context so it doesn't affect ancestors.
-			if (nextType._isProvider) {
+			if (nextType.type == CProvider) {
 				context = Object.create(context);
 			}
 

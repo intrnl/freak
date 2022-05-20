@@ -1,4 +1,6 @@
-export let isVNode = Symbol.for('freak.vnode');
+import { VNode } from './utils';
+
+
 export let uid = 0;
 
 export function cloneElement (element, props, ...children) {
@@ -38,7 +40,7 @@ export function jsxs (type, props, key) {
 
 export function vnode (type, props, key = null, id = uid++) {
 	return {
-		_type: isVNode,
+		_type: VNode,
 
 		_id: id,
 		_depth: 0,

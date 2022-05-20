@@ -1,4 +1,5 @@
 import { getHookState } from './diff.js'
+import { CProvider } from './utils.js';
 
 let contextId = 0;
 
@@ -27,4 +28,4 @@ export function Provider (props, ctx) {
 	return children;
 }
 
-Provider._isProvider = true;
+Provider.type = CProvider;
