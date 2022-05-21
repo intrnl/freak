@@ -60,8 +60,8 @@ export function Suspense (props) {
 	}
 
 	return [
-		jsx(Fragment, { children: suspended ? [] : props.children }),
-		suspended && jsx(Fragment, { children: [props.fallback] })
+		vnode(Fragment, { children: suspended ? [] : props.children }),
+		suspended && vnode(Fragment, { children: [props.fallback] })
 	];
 }
 
