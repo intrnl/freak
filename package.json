@@ -2,14 +2,29 @@
 	"type": "module",
 	"name": "@intrnl/freak",
 	"description": "Lightweight React-like alternative",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"author": "intrnl",
 	"license": "MIT",
 	"repository": {
 		"url": "https://github.com/intrnl/freak"
 	},
 	"files": [
-		"src/"
+		"src/",
+		"dist/"
 	],
-	"main": "src/index.js"
+	"main": "dist/freak.js",
+	"module": "dist/freak.mjs",
+	"exports": {
+		"require": "./dist/freak.js",
+		"import": "./dist/freak.mjs"
+	},
+	"scripts": {
+		"prepublishOnly": "pnpm run bundle",
+		"bundle": "pnpm run bundle:esm && pnpm run bundle:cjs",
+		"bundle:esm": "esbuild src/index.js --bundle --format=esm --outfile=dist/freak.mjs --mangle-props=^_",
+		"bundle:cjs": "esbuild src/index.js --bundle --format=cjs --outfile=dist/freak.js --mangle-props=^_"
+	},
+	"devDependencies": {
+		"esbuild": "^0.14.39"
+	}
 }
