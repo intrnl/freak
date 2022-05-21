@@ -31,7 +31,7 @@ export function jsx (type, props, key) {
 		props.children = [props.children];
 	}
 
-	return jsxs(type, props, key);
+	return vnode(type, props, key);
 }
 
 export function jsxs (type, props, key) {
