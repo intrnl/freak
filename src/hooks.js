@@ -16,7 +16,7 @@ export function useContext (context) {
 			let callback = () => enqueueRenderInstance(instance);
 
 			state._listeners.add(callback);
-			return () => state._listeners.remove();
+			return () => state._listeners.delete(callback);
 		}
 	}, [state]);
 
