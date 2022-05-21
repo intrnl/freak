@@ -1,4 +1,4 @@
-import { jsx } from './element.js';
+import { vnode } from './element.js';
 import { currInstance, enqueueRenderInstance } from './diff.js';
 import { Fragment } from './fragment.js';
 import { CSuspense } from './utils.js';
@@ -27,7 +27,7 @@ export function lazy (loader) {
 			throw promise;
 		}
 
-		return jsx(component, props);
+		return vnode(component, props);
 	}
 
 	return LazyComponent;
