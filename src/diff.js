@@ -352,8 +352,10 @@ function setProperty (dom, name, value, prevValue, isSVG) {
 			name = name.slice(0, -7);
 		}
 
-		if (name.toLowerCase() in dom) {
-			name = name.toLowerCase();
+		let lowercase = name.toLowerCase();
+
+		if (lowercase in dom) {
+			name = lowercase;
 		}
 
 		name = name.slice(2);
