@@ -3,6 +3,10 @@ import { VNode } from './utils.js';
 
 export let uid = 0;
 
+export function isValidElement (vnode) {
+	return vnode && vnode._type === VNode;
+}
+
 export function cloneElement (element, props, ...children) {
 	props = { ...element.props, ...props };
 
