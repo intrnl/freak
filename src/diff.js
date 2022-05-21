@@ -155,7 +155,7 @@ function diffProps (dom, nextProps, prevProps, isSVG) {
 	}
 
 	for (let key in nextProps) {
-		if (typeof nextProps[key] == 'function' && key !== 'children' && key !== 'key' && prevProps[key] !== nextProps[key]) {
+		if (key !== 'children' && key !== 'key' && prevProps[key] !== nextProps[key]) {
 			setProperty(dom, key, nextProps[key], prevProps[key], isSVG);
 		}
 	}
@@ -367,7 +367,7 @@ function setProperty (dom, name, value, prevValue, isSVG) {
 		}
 	}
 	else {
-		if (name === 'className') {
+		if (isSVG && name === 'className') {
 			name = 'class';
 		}
 		else if (name !== 'href' && name !== 'list' && name !== 'form' && name !== 'tabIndex' && name !== 'download' && name in dom) {
