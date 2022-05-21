@@ -92,6 +92,19 @@ export function useRef (initialValue) {
 	return useMemo(() => ({ current: initialValue }));
 }
 
+export function useImperativeHandle (ref, creator, args) {
+	useLayoutEffect(() => {
+		if (typeof ref == 'function') {
+			ref(creator());
+			return () => ref(null);
+		}
+		else if (ref) {
+			ref.current = creator();
+			return () => ref.current = null;
+		}
+	}, args == null ? [ref] : args.concat(ref));
+}
+
 
 function argsChanged (prev, next) {
 	return !prev || prev.length != next.length || next.some((val, idx) => val !== prev[idx]);

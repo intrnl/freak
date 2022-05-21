@@ -219,9 +219,9 @@ function diffChildren (dom, result, nextParent, prevParent, context, isSVG, exce
 
 		let nextDOM = nextChild._dom;
 
-		if (nextChild.ref && nextChild.ref !== prevChild.ref) {
+		if (nextChild.ref && !nextChild._instance && nextChild.ref !== prevChild.ref) {
 			if (prevChild.ref) refs.push([prevChild.ref, null, nextChild]);
-			refs.push([nextChild.ref, nextChild._instance, nextChild]);
+			refs.push([nextChild.ref, nextDOM, nextChild]);
 		}
 
 		if (nextDOM != null) {
