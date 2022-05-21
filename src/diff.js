@@ -492,7 +492,7 @@ function applyRef (ref, value, vnode) {
 
 
 /// Error handling
-function handleError (vnode, error, prevVNode) {
+function handleError (error, vnode, prevVNode) {
 	let isSuspense = error.then;
 
 	while (vnode = vnode._parent) {
