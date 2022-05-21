@@ -367,7 +367,7 @@ function setProperty (dom, name, value, prevValue, isSVG) {
 		}
 	}
 	else {
-		if (isSVG && name === 'className') {
+		if (name === 'className') {
 			name = 'class';
 		}
 		else if (name !== 'href' && name !== 'list' && name !== 'form' && name !== 'tabIndex' && name !== 'download' && name in dom) {
