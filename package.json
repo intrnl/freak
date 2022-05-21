@@ -1,0 +1,15 @@
+{
+	"type": "module",
+	"name": "@intrnl/freak",
+	"description": "Lightweight React-like alternative",
+	"version": "0.1.0",
+	"author": "intrnl",
+	"license": "MIT",
+	"repository": {
+		"url": "https://github.com/intrnl/freak"
+	},
+	"files": [
+		"src/"
+	],
+	"main": "src/index.js"
+}
