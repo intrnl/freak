@@ -67,7 +67,7 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 		}
 	}
 	catch (error) {
-		handleError(next, error);
+		handleError(error, next, prev);
 	}
 }
 
@@ -486,13 +486,13 @@ function applyRef (ref, value, vnode) {
 		}
 	}
 	catch (err) {
-		handleError(vnode, err);
+		handleError(err, vnode);
 	}
 }
 
 
 /// Error handling
-function handleError (vnode, error) {
+function handleError (vnode, error, prevVNode) {
 	let isSuspense = error.then;
 
 	while (vnode = vnode._parent) {
@@ -508,9 +508,7 @@ function handleError (vnode, error) {
 				continue;
 			}
 
-			if (instance._handleError(error)) {
-				return;
-			}
+			return instance._handleError(error);
 		}
 		catch (err) {
 			error = err;
@@ -602,7 +600,7 @@ function flushEffects (instance) {
 		}
 	}
 	catch (error) {
-		handleError(instance._vnode, error);
+		handleError(error, instance._vnode);
 	}
 }
 
@@ -613,7 +611,7 @@ function clearEffects (instance) {
 		}
 	}
 	catch (error) {
-		handleError(instance._vnode, error);
+		handleError(error, instance._vnode);
 	}
 }
 
