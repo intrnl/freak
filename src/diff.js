@@ -529,15 +529,15 @@ function createInstance () {
 
 let renderQueue = [];
 
-export function enqueueRenderInstance (instance) {
+export function enqueueInstanceRender (instance) {
 	if (!renderQueue.length) {
-		requestAnimationFrame(flushRenderInstance);
+		requestAnimationFrame(flushInstanceRender);
 	}
 
 	renderQueue.push(instance);
 }
 
-function flushRenderInstance () {
+function flushInstanceRender () {
 	let queue;
 
 	while (renderQueue.length) {

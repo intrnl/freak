@@ -1,4 +1,4 @@
-import { currInstance, getHookState, enqueueRenderInstance } from './diff.js';
+import { currInstance, getHookState, enqueueInstanceRender } from './diff.js';
 
 
 export function useErrorBoundary (callback) {
@@ -13,7 +13,7 @@ export function useContext (context) {
 
 	useLayoutEffect(() => {
 		if (state) {
-			let callback = () => enqueueRenderInstance(instance);
+			let callback = () => enqueueInstanceRender(instance);
 
 			state._listeners.add(callback);
 			return () => state._listeners.delete(callback);
@@ -35,15 +35,15 @@ export function useReducer (reducer, initialState, init) {
 
 			if (prevState !== nextState) {
 				state._value = [nextState, dispatch];
-				enqueueRenderInstance(state._instance);
+				enqueueInstanceRender(state._instance);
 			}
 		};
 
 		state._value = [initialState, dispatch];
+		state._instance = currInstance;
 	}
 
 	state._reducer = reducer;
-	state._instance = currInstance;
 	return state._value;
 }
 
