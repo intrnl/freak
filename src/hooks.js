@@ -107,7 +107,17 @@ export function useImperativeHandle (ref, creator, args) {
 
 
 function argsChanged (prev, next) {
-	return !prev || prev.length != next.length || next.some((val, idx) => val !== prev[idx]);
+	if (!prev || prev.length != next.length) {
+		return false;
+	}
+
+	for (let idx = 0, len = prev.length; idx < len; idx++) {
+		if (prev[idx] !== next[idx]) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 function invokeOrReturn (value, fn) {
