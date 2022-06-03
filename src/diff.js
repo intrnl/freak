@@ -1,6 +1,6 @@
 import { Fragment } from './fragment.js';
 import { vnode } from './element.js';
-import { CProvider, CSuspense, VNode } from './utils.js';
+import { CProvider, VNode } from './utils.js';
 
 
 export let currInstance = null
@@ -67,7 +67,7 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 		}
 	}
 	catch (error) {
-		handleError(error, next, prev);
+		handleError(error, next);
 	}
 }
 
@@ -419,12 +419,12 @@ function unmount (vnode, parent, skip) {
 	}
 
 	if (instance) {
-		clearEffects(instance);
-
 		let onSuspensionResolve = instance._onSuspensionResolve;
 		if (onSuspensionResolve) {
 			onSuspensionResolve();
 		}
+
+		clearEffects(instance);
 	}
 
 	if (children) {
@@ -492,17 +492,10 @@ function applyRef (ref, value, vnode) {
 
 
 /// Error handling
-function handleError (error, vnode, prevVNode) {
-	let isSuspense = error.then;
-
+function handleError (error, vnode) {
 	while (vnode = vnode._parent) {
 		try {
-			let component = vnode.type;
 			let instance = vnode._instance;
-
-			if (isSuspense && component.type === CSuspense) {
-				return component._childDidSuspend(instance, error, vnode);
-			}
 
 			if (!instance || !instance._handleError) {
 				continue;
