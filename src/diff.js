@@ -50,7 +50,7 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 			if (result?.type == Fragment && result.key == null) {
 				result = result.props.children;
 			}
-			else if (!Array.isArray(result)) {
+			if (!Array.isArray(result)) {
 				result = [result];
 			}
 
