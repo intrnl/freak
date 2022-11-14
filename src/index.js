@@ -5,6 +5,7 @@ export {
 	createElement,
 	createElement as h,
 	cloneElement,
+	toChildArray,
 } from './element.js';
 
 export { Provider, createContext } from './context.js';

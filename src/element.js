@@ -29,6 +29,10 @@ export function createElement (type, props, ...children) {
 	return vnode(type, props, props.key);
 }
 
+export function toChildArray (children) {
+	return Array.isArray(children) ? children : [children];
+}
+
 
 export function vnode (type, props, key = null, id = uid++) {
 	return {
