@@ -219,12 +219,9 @@ function diffChildren (dom, result, nextParent, prevParent, context, isSVG, exce
 
 		let nextDOM = nextChild._dom;
 
-		let nextChildRef = nextChild.props.ref;
-		let prevChildRef = prevChild.props.ref;
-
-		if (nextChildRef && !nextChild._instance && nextChildRef !== prevChildRef) {
-			if (prevChildRef) refs.push([prevChildRef, null, nextChild]);
-			refs.push([nextChildRef, nextDOM, nextChild]);
+		if (nextChild.ref && !nextChild._instance && nextChild.ref !== prevChild.ref) {
+			if (prevChild.ref) refs.push([prevChild.ref, null, nextChild]);
+			refs.push([nextChild.ref, nextDOM, nextChild]);
 		}
 
 		if (nextDOM != null) {
@@ -411,12 +408,12 @@ function setStyle (style, key, value) {
 }
 
 function unmount (vnode, parent, skip) {
-	let ref = vnode.props.ref;
+	let ref = vnode.ref;
 	let instance = vnode._instance;
 	let children = vnode._children;
 
 	if (ref) {
-		if (!ref.current || ref.current == vnode._dom) {
+		if (!ref.current || ref.current !== vnode._dom) {
 			applyRef(ref, null, parent);
 		}
 	}
