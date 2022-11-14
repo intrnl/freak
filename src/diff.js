@@ -296,7 +296,7 @@ function placeChild (dom, next, prev, prevChildren, nextDOM, prevDOM) {
 			place = null;
 		}
 		else {
-			for (let sibling = prevDOM, idx = 0; (sibling = sibling.nextSibling) && idx < prevChildren.length; idx += 2) {
+			for (let sibling = prevDOM, idx = 0; (sibling = sibling.nextSibling) && idx < prevChildren.length; idx += 1) {
 				if (sibling == nextDOM) {
 					break outer;
 				}
