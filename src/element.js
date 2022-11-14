@@ -51,6 +51,5 @@ export function vnode (type, props, key = null, id = uid++) {
 		type: type,
 		props: props,
 		key: key,
-		ref: props.ref,
 	};
 }
