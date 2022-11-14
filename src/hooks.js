@@ -113,11 +113,11 @@ function argsChanged (prev, next) {
 
 	for (let idx = 0, len = prev.length; idx < len; idx++) {
 		if (prev[idx] !== next[idx]) {
-			return false;
+			return true;
 		}
 	}
 
-	return true;
+	return false;
 }
 
 function invokeOrReturn (value, fn) {
