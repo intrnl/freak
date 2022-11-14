@@ -108,7 +108,7 @@ export function useImperativeHandle (ref, creator, args) {
 
 function argsChanged (prev, next) {
 	if (!prev || prev.length != next.length) {
-		return false;
+		return true;
 	}
 
 	for (let idx = 0, len = prev.length; idx < len; idx++) {
