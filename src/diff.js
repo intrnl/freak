@@ -149,13 +149,13 @@ function diffElement (dom, next, prev, context, isSVG, excessDOM) {
 
 function diffProps (dom, nextProps, prevProps, isSVG) {
 	for (let key in prevProps) {
-		if (key !== 'children' && key !== 'key' && !(key in nextProps)) {
+		if (key !== 'children' && key !== 'key' && key !== 'ref' && !(key in nextProps)) {
 			setProperty(dom, key, null, prevProps[key], isSVG);
 		}
 	}
 
 	for (let key in nextProps) {
-		if (key !== 'children' && key !== 'key' && prevProps[key] !== nextProps[key]) {
+		if (key !== 'children' && key !== 'key' && key !== 'ref' && prevProps[key] !== nextProps[key]) {
 			setProperty(dom, key, nextProps[key], prevProps[key], isSVG);
 		}
 	}
