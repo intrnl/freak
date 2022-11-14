@@ -26,21 +26,9 @@ export function createElement (type, props, ...children) {
 		props.children = children;
 	}
 
-	return jsx(type, props, props.key);
+	return vnode(type, props, props.key);
 }
 
-
-export function jsx (type, props, key) {
-	if (!Array.isArray(props.children)) {
-		props.children = [props.children];
-	}
-
-	return vnode(type, props, key);
-}
-
-export function jsxs (type, props, key) {
-	return vnode(type, props, key);
-}
 
 export function vnode (type, props, key = null, id = uid++) {
 	return {
