@@ -15,16 +15,25 @@
 	"main": "dist/freak.js",
 	"module": "dist/freak.mjs",
 	"exports": {
-		"require": "./dist/freak.js",
-		"import": "./dist/freak.mjs"
+		".": {
+			"require": "./dist/freak.js",
+			"import": "./dist/freak.mjs"
+		},
+		"./jsx-runtime": {
+			"require": "./dist/jsx.js",
+			"import": "./dist/jsx.mjs"
+		},
+		"./jsx-dev-runtime": {
+			"require": "./dist/jsx.js",
+			"import": "./dist/jsx.mjs"
+		}
 	},
 	"scripts": {
-		"prepublishOnly": "pnpm run bundle",
-		"bundle": "pnpm run bundle:esm && pnpm run bundle:cjs",
-		"bundle:esm": "esbuild src/index.js --bundle --format=esm --outfile=dist/freak.mjs --mangle-props=^_",
-		"bundle:cjs": "esbuild src/index.js --bundle --format=cjs --outfile=dist/freak.js --mangle-props=^_"
+		"prepublishOnly": "pnpm run build",
+		"build": "rollup -c"
 	},
 	"devDependencies": {
-		"esbuild": "^0.14.39"
+		"esbuild": "^0.14.39",
+		"rollup": "^3.3.0"
 	}
 }
