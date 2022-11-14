@@ -89,7 +89,7 @@ export function useCallback (callback, args) {
 }
 
 export function useRef (initialValue) {
-	return useMemo(() => ({ current: initialValue }));
+	return useMemo(() => ({ current: initialValue }), []);
 }
 
 export function useImperativeHandle (ref, creator, args) {
