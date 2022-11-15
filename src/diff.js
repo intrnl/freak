@@ -40,6 +40,10 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 				context = Object.create(context);
 			}
 
+			if (nextType.memo) {
+				console.log(instance)
+			}
+
 			if ((next._id === prev._id) || (!instance._dirty && nextType.memo && nextType.memo(prev.props, nextProps))) {
 				instance._vnode = next;
 
@@ -83,7 +87,7 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 			flushLayoutEffects(instance, next);
 			requestAnimationFrame(() => flushEffects(instance));
 
-			instance._force = false;
+			instance._dirty = false;
 		}
 		else if (!excessDOM && next._id === prev._id) {
 			next._child = prev._child;

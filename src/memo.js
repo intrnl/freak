@@ -22,5 +22,5 @@ export function memo (component, comparator = defaultComparator) {
 	}
 
 	Memoized.memo = comparator;
-	return component;
+	return Memoized;
 }

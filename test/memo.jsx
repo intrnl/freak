@@ -33,15 +33,34 @@ function UnmemoizedCounter (props) {
 const MemoizedCounter = Freak.memo(UnmemoizedCounter);
 
 function App () {
-	return (
-		<fieldset>
-			<legend>Unmemoized</legend>
-			<UnmemoizedCounter>
-				<UnmemoizedCounter>
+	const [count, setCount] = Freak.useState(0)
 
+	const increment = () => {
+		setCount(count + 1)
+	}
+
+	return (
+		<Freak.Fragment>
+			<button onClick={increment}>
+				count: {count}
+			</button>
+
+			<fieldset>
+				<legend>Unmemoized</legend>
+				<UnmemoizedCounter>
+					<UnmemoizedCounter>
+					</UnmemoizedCounter>
 				</UnmemoizedCounter>
-			</UnmemoizedCounter>
-		</fieldset>
+			</fieldset>
+
+			<fieldset>
+				<legend>Memoized</legend>
+				<MemoizedCounter>
+					<MemoizedCounter>
+					</MemoizedCounter>
+				</MemoizedCounter>
+			</fieldset>
+		</Freak.Fragment>
 	)
 }
 
