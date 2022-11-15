@@ -10,5 +10,6 @@ export {
 
 export { Provider, createContext } from './context.js';
 export { Fragment } from './fragment.js';
+export { memo } from './memo.js';
 
 export * from './hooks.js';

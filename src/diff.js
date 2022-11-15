@@ -40,6 +40,31 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 				context = Object.create(context);
 			}
 
+			if ((next._id === prev._id) || (!instance._dirty && nextType.memo && nextType.memo(prev.props, nextProps))) {
+				instance._vnode = next;
+
+				next._dom = prev._dom;
+				next._child = prev._child;
+
+				for (let i = 0; i < next._child.length; i++) {
+					let vnode = next._child[i];
+
+					if (vnode) {
+						vnode._parent = next;
+					}
+
+					if (excessDOM && vnode._dom) {
+						let indexOf = excessDOM.indexOf(vnode._dom);
+
+						if (indexOf > -1) {
+							excessDOM[indexOf] = null;
+						}
+					}
+				}
+
+				return;
+			}
+
 			currInstance = instance;
 			currIndex = 0;
 
@@ -57,6 +82,8 @@ export function diff (dom, next, prev, context, isSVG, excessDOM, prevDOM) {
 			diffChildren(dom, result, next, prev, context, isSVG, excessDOM, prevDOM);
 			flushLayoutEffects(instance, next);
 			requestAnimationFrame(() => flushEffects(instance));
+
+			instance._force = false;
 		}
 		else if (!excessDOM && next._id === prev._id) {
 			next._child = prev._child;
@@ -111,15 +138,6 @@ function diffElement (dom, next, prev, context, isSVG, excessDOM) {
 	}
 	else {
 		excessDOM &&= [...dom.childNodes];
-		prevProps ||= {};
-
-		if (excessDOM != null) {
-			prevProps = {};
-
-			for (let idx = 0; idx < dom.attributes.length; idx++) {
-				prevProps[dom.attributes[idx].name] = dom.attributes[idx].value;
-			}
-		}
 
 		diffProps(dom, nextProps, prevProps, isSVG);
 
@@ -128,7 +146,10 @@ function diffElement (dom, next, prev, context, isSVG, excessDOM) {
 		}
 		else {
 			let child = next.props.children;
-			if (!Array.isArray(child)) child = [child];
+
+			if (!Array.isArray(child)) {
+				child = [child];
+			}
 
 			diffChildren(dom, child, next, prev, context, isSVG, excessDOM, excessDOM ? excessDOM[0] : prev._child && getDOMSibling(prev, 0));
 
@@ -147,7 +168,7 @@ function diffElement (dom, next, prev, context, isSVG, excessDOM) {
 	return dom;
 }
 
-function diffProps (dom, nextProps, prevProps, isSVG) {
+function diffProps (dom, nextProps, prevProps = {}, isSVG) {
 	for (let key in prevProps) {
 		if (key !== 'children' && key !== 'key' && key !== 'ref' && !(key in nextProps)) {
 			setProperty(dom, key, null, prevProps[key], isSVG);
@@ -515,6 +536,8 @@ function handleError (error, vnode) {
 /// Components
 function createInstance () {
 	return {
+		_dirty: true,
+
 		_context: null,
 		_vnode: null,
 		_dom: null,
@@ -534,6 +557,7 @@ export function enqueueInstanceRender (instance) {
 		requestAnimationFrame(flushInstanceRender);
 	}
 
+	instance._dirty = true;
 	renderQueue.push(instance);
 }
 
